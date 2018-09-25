@@ -1,3 +1,3 @@
 # Buscador Bienes Raices
 
-Practica para NextU de buscador en backend de vienes raices
+Practica para NextU.  Buscador de bienes raices

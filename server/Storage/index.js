@@ -2,7 +2,7 @@ var fs = require("fs"),
 path = require("path")
 
 var getData = function(filters){
-	var dataPath = __dirname + path.join('/data/users.json')
+	var dataPath = __dirname + path.join('/data/data.json')
 
 				   
 	return new Promise(function(resolver,reject){
@@ -13,7 +13,6 @@ var getData = function(filters){
 
 	})	
 }
-
 
 module.exports = {
 	getData : getData
