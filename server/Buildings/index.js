@@ -3,15 +3,17 @@ const express = require('express'),
     Storage = require('../Storage')
 
 
+
+// API GET para realizar la busqueda de bienes raicestend
 router.get("/filters",(req,res) => {
+
+    // Variables obtenidas del metodo GET
     let show_all = req.query.show_all == undefined ? true : req.query.show_all;
     let city = req.query.city;
     let types = req.query.types;
-    let price_one = req.query.price_one;
-    let price_two = req.query.price_two;
+    let range_prices = req.query.range_prices
     let objfind = {}
 
-    console.log(show_all,city,types,price_one,price_two)
 
     if(city){
       objfind['Ciudad'] = city
@@ -23,16 +25,19 @@ router.get("/filters",(req,res) => {
       show_all = false
     }
 
-    if(price_one && price_two){
+    if(range_prices){
+      let price_one = range_prices.split(";")[0];
+      let price_two = range_prices.split(";")[1];
       objfind['Precio'] = {"price_one":parseInt(price_one) , "price_two":parseInt(price_two)}
       show_all = false
     }
 
+    // Funcion para filtrar las busquedas 
     var dataFilters = (data,objfind,cb)=> {
       var buildkeys = objfind
       let filterBuilding = (building)=> {
+          let price = parseInt(building['Precio'].replace('$','').replace(',','').replace('.',''))
           if (buildkeys['Ciudad']&&buildkeys['Tipo']&&buildkeys['Precio']){
-            let price = parseInt(building['Precio'].replace('$','').replace(',','').replace('.',''))
             if (price >= buildkeys['Precio']['price_one'] && price <= buildkeys['Precio']['price_two'] && building['Ciudad'] === buildkeys['Ciudad'] && building['Tipo'] === buildkeys['Tipo']){
               return true
             }else{
@@ -84,7 +89,7 @@ router.get("/filters",(req,res) => {
     }
 
 
-    //get buildings
+    // Busqueda de informacion en el archivo data
     Storage.getData('data')
            .then((buildings)=>{
             if(show_all){
@@ -99,9 +104,9 @@ router.get("/filters",(req,res) => {
            })
 })
 
-
+// API GET para llenar select en Frontend
 router.get("/fillfilters",(req,res) => {
-
+    // Funcion para obteer los valores unicos del las llaves Ciudad y Tipo
     var datafillFilters = (data,cb)=> {
       
       var result = {"cities":[],"types":[]}
@@ -118,7 +123,7 @@ router.get("/fillfilters",(req,res) => {
       cb(result) 
     }
 
-    //get filters
+    // Busqueda de informacion en el archivo data
     Storage.getData('data')
            .then((buildings)=>{
               datafillFilters(buildings,(result)=>{
